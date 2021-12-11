@@ -21,7 +21,7 @@ def switch_player(move):
 
 def main():
     move = 0
-    global running
+    running = True
     matrix = []
     row_list = [[" " for _ in range(i, i + 3)] for i in range(0, 7, 3)]
     game_grid(row_list)
@@ -56,5 +56,4 @@ def main():
 
 
 if __name__ == '__main__':
-    running = True
     main()
