@@ -6,36 +6,55 @@ def game_grid(matrix_):
     print("---------")
 
 
-user_input = input()
-game_states = {
-    "1": "Game not finished",
-    "2": "Draw",
-    "3": "X wins",
-    "4": "O wins",
-    "5": "Impossible"}
-win_x = ['X', 'X', 'X']
-win_o = ['O', 'O', 'O']
-count_x = user_input.count("X")
-count_o = user_input.count("O")
-row_list = [[j for j in user_input[i:i + 3]] for i in range(0, 7, 3)]
-col_list = [[j for j in user_input[i::3]] for i in range(3)]
-diagonal_list = [[row_list[i][i] for i in range(3)]] + [[row_list[i][2 - i] for i in range(3)]]
-matrix = row_list + col_list + diagonal_list
-game_grid(row_list)
+def check_win(grid):
+    col_list = [[j[i] for j in grid] for i in range(3)]
+    diagonal_list = [[grid[i][i] for i in range(3)]] + [[grid[i][2 - i] for i in range(3)]]
+    matrix_ = grid + col_list + diagonal_list
+    return matrix_
 
-valid = False
-while not valid:
-    try:
-        i, j = input("Enter the coordinates: ").split()
-        i, j = int(i), int(j)
-        if 1 <= i <= 3 and 1 <= j <= 3:
-            if "_" in row_list[i - 1][j - 1]:
-                row_list[i - 1][j - 1] = "X"
-                game_grid(row_list)
-                valid = True
+
+def switch_player(move):
+    if move % 2 == 0:
+        return "X"
+    return "O"
+
+
+def main():
+    move = 0
+    global running
+    matrix = []
+    row_list = [[" " for _ in range(i, i + 3)] for i in range(0, 7, 3)]
+    game_grid(row_list)
+    win_x = ['X', 'X', 'X']
+    win_o = ['O', 'O', 'O']
+
+    while running:
+        try:
+            i, j = input("Enter the coordinates: ").split()
+            i, j = int(i), int(j)
+            if 1 <= i <= 3 and 1 <= j <= 3:
+                if " " in row_list[i - 1][j - 1]:
+                    row_list[i - 1][j - 1] = switch_player(move)
+                    game_grid(row_list)
+                    move += 1
+                    matrix += check_win(row_list)
+                    if win_o in matrix:
+                        print("O wins")
+                        running = False
+                    elif win_x in matrix:
+                        print("X wins")
+                        running = False
+                    elif move >= 9:
+                        print("Draw")
+                        running = False
+                else:
+                    print("This cell is occupied! Choose another one!")
             else:
-                print("This cell is occupied! Choose another one!")
-        else:
-            print("Coordinates should be from 1 to 3!")
-    except ValueError:
-        print("You should enter numbers!")
+                print("Coordinates should be from 1 to 3!")
+        except ValueError:
+            print("You should enter numbers!")
+
+
+if __name__ == '__main__':
+    running = True
+    main()
